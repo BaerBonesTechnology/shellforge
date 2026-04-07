@@ -1,0 +1,78 @@
+name: Bug Report
+description: File a bug report to help us improve
+title: "[Bug] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe the bug...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen
+      placeholder: Expected behavior...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: A clear and concise description of what actually happened
+      placeholder: Actual behavior...
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Relevant environment details (OS, version, etc.)
+      placeholder: e.g., Windows 10, macOS 12, Ubuntu 20.04
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs-or-output
+    attributes:
+      label: Logs or Error Output
+      description: Any relevant logs, error messages, or output
+      placeholder: Paste logs or error output here
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+      placeholder: Add any other context here...
+    validations:
+      required: false

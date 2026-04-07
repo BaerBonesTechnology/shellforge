@@ -1,0 +1,57 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature! Please fill out this form as completely as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the feature you're requesting
+      placeholder: Describe what you'd like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why should this feature be implemented? What problem does it solve?
+      placeholder: Explain the use case and benefits...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or workarounds you've considered
+      placeholder: What else have you tried?...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgments
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have provided sufficient detail and context
+          required: true
