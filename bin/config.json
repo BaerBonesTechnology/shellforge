@@ -1,7 +1,7 @@
 {
   "announcements": [
     {
-      "version": "0.0.2",
+      "version": "0.0.3",
       "message":[ "Welcome and thank you for using ShellForge! This is the first version of ShellForge and it includes a tutorial to help you get started. To access the tutorial, run `forge tutorial` in your terminal. If you have any questions or feedback, please feel free to open an issue on our GitHub repository. We hope you enjoy using ShellForge!",
       "A few tips to help you get started: \n- To create a new script, run `forge create <script-name>`\n- To run a script, run `forge run <script-name>`\n- To see all available commands, run `forge help`\n- By default scripts are stored in the `~/.scripts` directory, but you can change this in the config file.\n- You can also specify a custom path for each script when you create it or in the config file.\n- Scripts can be created with any commands you would normally run in your terminal, just separate them with a comma (,)."]
     }
