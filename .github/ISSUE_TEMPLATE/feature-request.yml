@@ -2,6 +2,7 @@ name: Feature Request
 description: Suggest an idea for this project
 title: "[FEATURE] "
 labels: ["enhancement"]
+project: "ShellForge CLI"
 body:
   - type: markdown
     attributes:
@@ -45,15 +46,6 @@ body:
         - Critical
     validations:
       required: true
-
-  - type: checkboxes
-    id: sdk
-    attributes:
-      label: SDK
-      description: Which SDK(s) would this feature impact?
-      options:
-        - Dart
-        - Node.js
 
   - type: checkboxes
     id: terms

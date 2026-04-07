@@ -41,7 +41,6 @@ body:
       description: Which SDK(s) would these changes impact?
       options:
         - Dart
-        - Node.js
 
   - type: checkboxes
     id: terms

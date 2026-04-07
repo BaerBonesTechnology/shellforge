@@ -2,6 +2,7 @@ name: Bug Report
 description: File a bug report to help us improve
 title: "[Bug] "
 labels: ["bug"]
+project: "ShellForge CLI"
 assignees: []
 
 body:
@@ -16,17 +17,6 @@ body:
       label: Description
       description: A clear and concise description of what the bug is
       placeholder: Describe the bug...
-    validations:
-      required: true
-      
-  - type: dropdown
-    id: sdk
-    attributes:
-      label: SDK
-      description: Which SDK are you using?
-      options:
-        - Dart
-        - Node.js
     validations:
       required: true
 
