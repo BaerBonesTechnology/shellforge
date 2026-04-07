@@ -98,47 +98,135 @@ describe('resolveFlowParams', () => {
     });
   });
 
-  describe('optional {param==default}', () => {
+  describe('optional {param=>default}', () => {
     it('uses default value when param is not provided', async () => {
-      const script = 'git push origin {branch==main}';
+      const script = 'git push origin {branch=>main}';
       const result = await resolveFlowParams(script, {});
       expect(result).toBe('git push origin main');
     });
 
     it('uses CLI value when provided, overriding default', async () => {
-      const script = 'git push origin {branch==main}';
+      const script = 'git push origin {branch=>main}';
       const result = await resolveFlowParams(script, { branch: 'dev' });
       expect(result).toBe('git push origin dev');
     });
 
     it('handles default with special regex characters', async () => {
-      const script = 'echo {path==/usr/local/bin}';
+      const script = 'echo {path=>/usr/local/bin}';
       const result = await resolveFlowParams(script, {});
       expect(result).toBe('echo /usr/local/bin');
     });
 
     it('handles multiple optional params with different defaults', async () => {
-      const script = '{host==localhost}:{port==3000}';
+      const script = '{host=>localhost}:{port=>3000}';
       const result = await resolveFlowParams(script, { port: '8080' });
       expect(result).toBe('localhost:8080');
+    });
+
+    it('accepts = as shorthand for =>', async () => {
+      const script = 'git push origin {branch=main}';
+      const result = await resolveFlowParams(script, {});
+      expect(result).toBe('git push origin main');
+    });
+
+    it('accepts = shorthand with flag-style param', async () => {
+      const script = 'flutter create {name} {--org=com.baerhous} {--platforms=ios,android}';
+      const result = await resolveFlowParams(script, {}, null, ['millet']);
+      expect(result).toBe('flutter create millet --org=com.baerhous --platforms=ios,android');
+    });
+  });
+
+  describe('flag-style params (-- prefix)', () => {
+    it('optional flag auto-inserts = with default', async () => {
+      const script = 'flutter create {name} {--org=>com.example}';
+      const result = await resolveFlowParams(script, { name: 'myapp' });
+      expect(result).toBe('flutter create myapp --org=com.example');
+    });
+
+    it('optional flag with CLI override', async () => {
+      const script = 'flutter create {name} {--org=>com.example}';
+      const result = await resolveFlowParams(script, { name: 'myapp', org: 'com.custom' });
+      expect(result).toBe('flutter create myapp --org=com.custom');
+    });
+
+    it('nullable flag inserts flag=value when provided', async () => {
+      const script = 'flutter create {name} ?{--platforms}';
+      const result = await resolveFlowParams(script, { name: 'myapp', platforms: 'ios,android' });
+      expect(result).toBe('flutter create myapp --platforms=ios,android');
+    });
+
+    it('nullable flag removed entirely when not provided', async () => {
+      const script = 'flutter create {name} ?{--platforms}';
+      const result = await resolveFlowParams(script, { name: 'myapp' });
+      expect(result).toBe('flutter create myapp ');
+    });
+
+    it('full flutter example with all param types', async () => {
+      const script = 'flutter create {name} {--org=>com.example} ?{--platforms}';
+      const result = await resolveFlowParams(script, { name: 'demo', platforms: 'ios,android' });
+      expect(result).toBe('flutter create demo --org=com.example --platforms=ios,android');
+    });
+
+    it('single-dash flag works', async () => {
+      const script = 'cmd {-o=>output.txt}';
+      const result = await resolveFlowParams(script, {});
+      expect(result).toBe('cmd -o=output.txt');
     });
   });
 
   describe('mixed param types', () => {
     it('handles required + nullable + optional together', async () => {
-      const script = 'git commit -m "{message}" && git push ?{remote} {branch==main}';
+      const script = 'git commit -m "{message}" && git push ?{remote} {branch=>main}';
       const result = await resolveFlowParams(script, { message: 'init' });
       expect(result).toBe('git commit -m "init" && git push  main');
     });
 
     it('all types provided via CLI', async () => {
-      const script = 'git commit -m "{message}" && git push ?{remote} {branch==main}';
+      const script = 'git commit -m "{message}" && git push ?{remote} {branch=>main}';
       const result = await resolveFlowParams(script, {
         message: 'init',
         remote: 'origin',
         branch: 'dev',
       });
       expect(result).toBe('git commit -m "init" && git push origin dev');
+    });
+  });
+
+  describe('positional args', () => {
+    it('maps positional args to non-flag required params in order', async () => {
+      const script = 'flutter create {name} {--org=>com.example} ?{--platforms}';
+      const result = await resolveFlowParams(script, { org: 'com.fli', platforms: 'ios,android' }, null, ['example']);
+      expect(result).toBe('flutter create example --org=com.fli --platforms=ios,android');
+    });
+
+    it('maps multiple positional args in order', async () => {
+      const script = 'cp {source} {destination}';
+      const result = await resolveFlowParams(script, {}, null, ['file.txt', '/tmp/']);
+      expect(result).toBe('cp file.txt /tmp/');
+    });
+
+    it('positional args do not fill flag-style required params', async () => {
+      const script = 'cmd {--flag}';
+      await expect(resolveFlowParams(script, {}, null, ['value'])).rejects.toThrow('Missing required parameters: flag');
+    });
+
+    it('named CLI args take precedence over positional args', async () => {
+      const script = 'echo {name}';
+      const result = await resolveFlowParams(script, { name: 'from-flag' }, null, ['from-positional']);
+      expect(result).toBe('echo from-flag');
+    });
+
+    it('prompts for remaining required params after positionals are exhausted', async () => {
+      const script = 'cmd {first} {second}';
+      const mockPrompt = async () => ({ second: 'prompted' });
+      const result = await resolveFlowParams(script, {}, mockPrompt, ['positional']);
+      expect(result).toBe('cmd positional prompted');
+    });
+
+    it('full flutter workflow: positional + flags + nullable', async () => {
+      const script = 'flutter create {name} {--org=>com.example} ?{--platforms}';
+      const result = await resolveFlowParams(script, { platforms: 'ios,android' }, null, ['demo']);
+      expect(result).toBe('flutter create demo --org=com.example --platforms=ios,android');
     });
   });
 });

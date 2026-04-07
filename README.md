@@ -16,14 +16,18 @@ This makes the `forge` command available globally.
 # 1. Initialize — pick your shell and storage location
 forge init
 
-# 2. Create a script
+# 2. Create a script — the interactive builder walks you through it
 forge create
-#    Script name: deploy
-#    Path: /home/user/my-project
-#    Commands: git add ., git commit -m "{message}", git push origin {branch==main},
+#    Script name: fl-create
+#    Path: /home/user/projects
+#    Base command: flutter create
+#      Parameter: name        (required)
+#      Parameter: --org       (optional, default: com.example)
+#      Parameter: --platforms (nullable)
 
 # 3. Run it
-forge run deploy
+forge run fl-create demo --platforms=ios,android
+# → flutter create demo --org=com.example --platforms=ios,android
 ```
 
 ## Commands
@@ -31,7 +35,7 @@ forge run deploy
 | Command | Description |
 |---------|-------------|
 | `forge init` | First-time setup — choose terminal profile and script directory |
-| `forge create` | Interactively create a new script |
+| `forge create` | Interactively build a new script with the command builder |
 | `forge list` | List all saved scripts |
 | `forge run <scriptName>` | Run a script by name |
 | `forge edit <scriptName>` | Open a script in your editor |
@@ -46,41 +50,53 @@ forge run deploy
 
 ## Script Parameters
 
-When creating a script, you can use parameter placeholders in your commands. These are resolved at runtime — either from CLI flags or interactive prompts.
+When creating a script, the command builder walks you through adding parameters to each command. Parameters are resolved at runtime — from positional args, CLI flags, or interactive prompts.
 
 ### Syntax
 
 | Syntax | Type | Behavior when not provided |
 |--------|------|---------------------------|
-| `{name}` | **Required** | User is prompted to enter a value |
+| `{name}` | **Required** | Filled by positional arg or prompted |
 | `?{name}` | **Nullable** | Silently removed (replaced with empty string) |
-| `{name==default}` | **Optional** | Uses the default value |
+| `{name=>default}` | **Optional** | Uses the default value |
+
+Flag-style parameters (prefixed with `--` or `-`) auto-insert `=` between the flag and value in the output:
+
+| Syntax | Type | Output |
+|--------|------|--------|
+| `{--org=>com.example}` | **Optional flag** | `--org=com.example` |
+| `?{--platforms}` | **Nullable flag** | `--platforms=value` or removed entirely |
 
 ### Example
 
-Create a script with parameters:
+A script built with the command builder:
 
 ```
-Enter the commands to run:
-git add ., git commit -m "{message}", git push ?{remote} {branch==main},
+flutter create {name} {--org=>com.example} ?{--platforms}
 ```
 
-Run it — parameters are prompted interactively:
+Run it — positional args map to non-flag required params, flags resolve named params:
 
 ```bash
-forge run deploy
-# > This script requires parameter(s): {message}
-# > Enter value for {message}: fix typo
-# ?{remote} is removed, {branch==main} defaults to "main"
+forge run fl-create myapp --platforms=ios,android
+# → flutter create myapp --org=com.example --platforms=ios,android
 ```
 
-Or pass values via flags to skip prompts:
+Override the default for `--org`:
 
 ```bash
-forge run deploy --message "fix typo" --remote origin --branch dev
+forge run fl-create myapp --org=com.custom --platforms=ios
+# → flutter create myapp --org=com.custom --platforms=ios
 ```
 
-You can mix both — pass some flags and get prompted for the rest.
+If required params aren't provided via positional args or flags, you'll be prompted interactively:
+
+```bash
+forge run fl-create
+# > This script requires parameter(s): {name}
+# > Enter value for {name}: myapp
+# → flutter create myapp --org=com.example
+```
 
 ## Editing Scripts
 
@@ -123,15 +139,18 @@ Stay up to date with what's new:
 forge news
 
 # Specific version
-forge news --versionChoice 0.0.2
+forge news --versionChoice 0.0.45
 
 # All announcements
 forge news --versionChoice ALL
 ```
 
-## What's New in v0.0.2
+## What's New in v0.0.41
 
-- **Script parameters** — Use `{param}`, `?{param}`, and `{param==default}` syntax for dynamic scripts
+- **Interactive command builder** — `forge create` now walks you through building commands step-by-step with typed parameters
+- **New parameter separator** — `=>` replaces `==` for optional defaults: `{param=>default}`
+- **Flag-style parameters** — Use `{--org=>com.example}` or `?{--platforms}` with auto `=` insertion in output
+- **Positional arguments** — `forge run script value` maps positional values to non-flag required params in order
 - **Interactive script execution** — Scripts now support stdin pass-through for commands that expect user input
 - **Config moved to home directory** — No longer writes to the installed package; lives in `~/.shellforge/`
 - **Improved version comparison** — Numeric comparison instead of string-based

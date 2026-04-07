@@ -23,23 +23,44 @@ export const compareVersions = (latestVersion, currentVersion) => {
 };
 
 /**
+ * Strips leading dashes from a parameter name to derive the CLI arg key.
+ * e.g. "--org" → "org", "-v" → "v", "name" → "name"
+ */
+const toCliKey = (name) => name.replace(/^-+/, '');
+
+/**
+ * Formats a resolved value for output. Flag-style params (starting with -)
+ * auto-insert "=" between the flag and value: --org + value → --org=value.
+ * Plain params just return the value as-is.
+ */
+const formatValue = (name, value) => {
+  if (value === "") return "";
+  return name.startsWith('-') ? `${name}=${value}` : value;
+};
+
+/**
  * Extracts parameter placeholders from script content, resolves them from
  * CLI args or interactive prompts, and returns the resolved script.
  *
  * Syntax:
- *   {paramName}            — Required: prompted if not passed via CLI
- *   ?{paramName}           — Nullable: removed silently if not passed via CLI
- *   {paramName==default}   — Optional: uses default value if not passed via CLI
+ *   {paramName}              — Required: prompted if not passed via CLI
+ *   ?{paramName}             — Nullable: removed silently if not passed via CLI
+ *   {paramName=>default}     — Optional: uses default value if not passed via CLI
+ *
+ * Flag-style params (prefixed with - or --) auto-insert "=" in the output:
+ *   {--org=>com.example}     → --org=com.example
+ *   ?{--platforms}           → --platforms=value  or  removed entirely
  *
  * @param {String} scriptContent The raw script content with param placeholders
- * @param {Object} cliArgs Key-value pairs passed via CLI
+ * @param {Object} cliArgs Key-value pairs passed via CLI (named flags)
  * @param {Function} promptFn Called with array of questions when prompting is needed
+ * @param {Array} positionalArgs Positional CLI values mapped in order to non-flag required params
  * @returns {String} Script content with all placeholders replaced
  */
-export const resolveFlowParams = async (scriptContent, cliArgs = {}, promptFn = null) => {
-  const requiredPattern = /(?<!\?)\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g;
-  const nullablePattern = /\?\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g;
-  const optionalPattern = /\{([a-zA-Z_][a-zA-Z0-9_]*)==(.*?)\}/g;
+export const resolveFlowParams = async (scriptContent, cliArgs = {}, promptFn = null, positionalArgs = []) => {
+  const requiredPattern = /(?<!\?)\{(-{0,2}[a-zA-Z_][a-zA-Z0-9_-]*)\}/g;
+  const nullablePattern = /\?\{(-{0,2}[a-zA-Z_][a-zA-Z0-9_-]*)\}/g;
+  const optionalPattern = /\{(-{0,2}[a-zA-Z_][a-zA-Z0-9_-]*)=>?(.*?)\}/g;
 
   const requiredMatches = [...scriptContent.matchAll(requiredPattern)];
   const nullableMatches = [...scriptContent.matchAll(nullablePattern)];
@@ -60,25 +81,33 @@ export const resolveFlowParams = async (scriptContent, cliArgs = {}, promptFn = 
   const resolved = {};
   const needsPrompt = [];
 
+  // Non-flag required params can be filled by positional args in order
+  const positionalQueue = [...positionalArgs];
+
   for (const name of requiredNames) {
-    if (cliArgs[name] !== undefined) {
-      resolved[name] = String(cliArgs[name]);
+    const key = toCliKey(name);
+    if (cliArgs[key] !== undefined) {
+      resolved[name] = String(cliArgs[key]);
+    } else if (!name.startsWith('-') && positionalQueue.length > 0) {
+      resolved[name] = String(positionalQueue.shift());
     } else {
       needsPrompt.push(name);
     }
   }
 
   for (const name of optionalNames) {
-    if (cliArgs[name] !== undefined) {
-      resolved[name] = String(cliArgs[name]);
+    const key = toCliKey(name);
+    if (cliArgs[key] !== undefined) {
+      resolved[name] = String(cliArgs[key]);
     } else {
       resolved[name] = optionalDefaults[name];
     }
   }
 
   for (const name of nullableNames) {
-    if (cliArgs[name] !== undefined) {
-      resolved[name] = String(cliArgs[name]);
+    const key = toCliKey(name);
+    if (cliArgs[key] !== undefined) {
+      resolved[name] = String(cliArgs[key]);
     } else {
       resolved[name] = "";
     }
@@ -86,32 +115,36 @@ export const resolveFlowParams = async (scriptContent, cliArgs = {}, promptFn = 
 
   if (needsPrompt.length > 0) {
     if (!promptFn) {
-      throw new Error(`Missing required parameters: ${needsPrompt.join(", ")}`);
+      const displayNames = needsPrompt.map((n) => toCliKey(n));
+      throw new Error(`Missing required parameters: ${displayNames.join(", ")}`);
     }
     const questions = needsPrompt.map((name) => ({
       type: "input",
-      name,
+      name: toCliKey(name),
       message: `Enter value for {${name}}:`,
       validate: (value) => value !== "" || `A value is required for {${name}}`,
     }));
     const answers = await promptFn(questions);
-    Object.assign(resolved, answers);
+    for (const name of needsPrompt) {
+      resolved[name] = answers[toCliKey(name)];
+    }
   }
 
   let result = scriptContent;
 
   for (const name of optionalNames) {
     const escapedDefault = optionalDefaults[name].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(`\\{${name}==${escapedDefault}\\}`, 'g');
-    result = result.replace(pattern, resolved[name]);
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`\\{${escapedName}=>?${escapedDefault}\\}`, 'g');
+    result = result.replace(pattern, formatValue(name, resolved[name]));
   }
 
   for (const name of nullableNames) {
-    result = result.replaceAll(`?{${name}}`, resolved[name]);
+    result = result.replaceAll(`?{${name}}`, formatValue(name, resolved[name]));
   }
 
   for (const name of requiredNames) {
-    result = result.replaceAll(`{${name}}`, resolved[name]);
+    result = result.replaceAll(`{${name}}`, formatValue(name, resolved[name]));
   }
 
   return result;
