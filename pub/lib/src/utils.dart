@@ -6,11 +6,17 @@ bool compareVersions(String latestVersion, String currentVersion) {
   final latest = latestVersion.split('.').map(int.parse).toList();
   final current = currentVersion.split('.').map(int.parse).toList();
 
-  if (latest[0] > current[0]) return true;
-  if (latest[0] == current[0] && latest[1] > current[1]) return true;
+  if (latest[0] > current[0]) {
+    return true;
+  }
+  if (latest[0] == current[0] && latest[1] > current[1]) {
+    return true;
+  }
   if (latest[0] == current[0] &&
       latest[1] == current[1] &&
-      latest[2] > current[2]) return true;
+      latest[2] > current[2]) {
+    return true;
+  }
 
   return false;
 }

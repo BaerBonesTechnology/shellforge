@@ -2,32 +2,33 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:shellforge/src/commands.dart';
 import 'package:shellforge/src/config.dart';
+import 'package:shellforge/src/constants.dart';
 import 'package:shellforge/src/prettify.dart';
 
 void main(List<String> arguments) async {
   final parser = ArgParser();
 
-  final initCmd = parser.addCommand('init');
-  final createCmd = parser.addCommand('create');
-  final listCmd = parser.addCommand('list');
+  parser.addCommand('init');
+  parser.addCommand('create');
+  parser.addCommand('list');
   final runCmd = parser.addCommand('run');
-  final deleteCmd = parser.addCommand('delete');
+  parser.addCommand('delete');
   final editCmd = parser.addCommand('edit');
-  final reinitCmd = parser.addCommand('reinit');
-  final clearCmd = parser.addCommand('clear');
-  final updateCmd = parser.addCommand('update');
-  final defaultCmd = parser.addCommand('default');
-  final configCmd = parser.addCommand('config');
+  parser.addCommand('reinit');
+  parser.addCommand('clear');
+  parser.addCommand('update');
+  parser.addCommand('default');
+  parser.addCommand('config');
   final newsCmd = parser.addCommand('news');
-  final helpCmd = parser.addCommand('help');
+  parser.addCommand('help');
 
-  runCmd.allowAnything;
+  runCmd.allowsAnything;
 
   editCmd.addOption('openCommand', abbr: 'o', help: 'Editor command name');
   editCmd.addOption('path', abbr: 'p', help: 'Editor executable path');
 
   newsCmd.addOption('versionChoice',
-      abbr: 'v', defaultsTo: 'LIST', help: 'Version to view');
+      abbr: 'v', defaultsTo: AnnouncementFilter.list, help: 'Version to view');
 
   ArgResults results;
   try {
