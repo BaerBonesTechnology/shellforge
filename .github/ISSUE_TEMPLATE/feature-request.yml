@@ -2,7 +2,7 @@ name: Feature Request
 description: Suggest an idea for this project
 title: "[FEATURE] "
 labels: ["enhancement"]
-project: "ShellForge CLI"
+projects: ["ShellForge CLI"]
 body:
   - type: markdown
     attributes:
