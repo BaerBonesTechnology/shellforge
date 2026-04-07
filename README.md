@@ -2,40 +2,51 @@
 
 A command-line workflow automation tool that lets you create, manage, and run reusable command sequences across Bash, Zsh, PowerShell, and CMD.
 
-## Packages
+## Installation
 
-| Package | Platform | Install |
-|---------|----------|---------|
-| [npm](npm/) | Node.js | `npm install -g shellforge` |
-| [pub](pub/) | Dart | `dart pub global activate shellforge` |
+```bash
+npm install -g shellforge
+```
+
+This makes the `forge` command available globally.
 
 ## Quick Start
 
 ```bash
-forge init              # First-time setup
-forge create            # Build a new script interactively
-forge run <name> [args] # Run a script by name
-forge list              # List all saved scripts
-forge help              # Show all commands
+# 1. Initialize — pick your shell and storage location
+forge init
+
+# 2. Create a script — the interactive builder walks you through it
+forge create
+#    Script name: fl-create
+#    Path: /home/user/projects
+#    Base command: flutter create
+#      Parameter: name        (required)
+#      Parameter: --org       (optional, default: com.example)
+#      Parameter: --platforms (nullable)
+
+# 3. Run it
+forge run fl-create demo --platforms=ios,android
+# → flutter create demo --org=com.example --platforms=ios,android
 ```
 
-## Repository Structure
+## Commands
 
-```
-shellforge/
-├── npm/    # Node.js package (npmjs.com)
-└── pub/    # Dart package (pub.dev)
-```
-
-See each package's README for full documentation, parameter syntax, and configuration details.
-
-## Contributing
-
-Contributions, bug reports, and feature suggestions are welcome.
-
-## License
-
-MIT — see [LICENSE](LICENSE) for details.
+| Command | Description |
+|---------|-------------|
+| `forge init` | First-time setup — choose terminal profile and script directory |
+| `forge create` | Interactively build a new script with the command builder |
+| `forge list` | List all saved scripts |
+| `forge run <scriptName>` | Run a script by name |
+| `forge edit <scriptName>` | Open a script in your editor |
+| `forge delete <scriptName>` | Delete a script |
+| `forge clear` | Delete all scripts |
+| `forge reinit` | Re-initialize (move or delete existing scripts) |
+| `forge update` | Update CLI and regenerate scripts |
+| `forge default` | Reset config to defaults |
+| `forge config` | View current configuration |
+| `forge news` | View version announcements |
+| `forge help` | Show help |
 
 ## Script Parameters
 

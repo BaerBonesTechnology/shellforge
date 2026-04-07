@@ -1,6 +1,6 @@
 {
   "name": "shellforge",
-  "version": "0.0.41",
+  "version": "0.0.42",
   "description": "A workflow CLI created to streamline any tasks that are done on a regular basis through the terminal",
   "main": "index.js",
   "type": "module",

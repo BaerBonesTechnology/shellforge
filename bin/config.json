@@ -1,0 +1,44 @@
+{
+  "announcements": [
+    {
+      "version": "0.0.42",
+      "message":[ "Welcome and thank you for using ShellForge! This is the first version of ShellForge and it includes a tutorial to help you get started. To access the tutorial, run `forge tutorial` in your terminal. If you have any questions or feedback, please feel free to open an issue on our GitHub repository. We hope you enjoy using ShellForge!",
+      "A few tips to help you get started: \n- To create a new script, run `forge create <script-name>`\n- To run a script, run `forge run <script-name>`\n- To see all available commands, run `forge help`\n- By default scripts are stored in the `~/.scripts` directory, but you can change this in the config file.\n- You can also specify a custom path for each script when you create it or in the config file.\n- Scripts can be created with any commands you would normally run in your terminal, just separate them with a comma (,)."]
+    }
+  ],
+  "defaultTextEditorCommand": "code",
+  "defaultTextEditorPath": null,
+  "scriptDir": "~/.scripts",
+  "scriptCommandDir": "~/.scripts/commands",
+  "scriptFileName": "scripts.json",
+  "defaultScriptPath": ".",
+  "terminalProfile": "zsh",
+  "initialized": false,
+  "announcementShown": false,
+  "init_messages": [
+    "Thank you for using ShellForge\ud83d\udcdc.\nIf this is your first time using ShellForge you chose an awesome version. This one has a tutorial"
+  ],
+  "tutorial": {
+    "steps": [
+      {
+        "title": "Welcome to ShellForge",
+        "message": "ShellForge is a tool that allows you to create and run scripts from the command line. It's a great tool for automating tasks and creating custom commands for your terminal. Would you like to go through a small tutorial on how to use ShellForge?",
+        "commands": []
+      },
+      {
+        "title": "Initialization",
+        "message": "Before you can start using ShellForge, you need to initialize it. This will set the terminal type to create a file for and create a directory where your scripts will be stored.\n\n Lets try it\n\n"
+      },
+      {
+        "title": "Creating a new script",
+        "message": "Now that we are initialized lets create a script. A script is a collection of commands that you can run from the command line. To create a new script, use the `forge create` command followed by the name of the script. For example, to create a script called `my-script`, you would run `forge create my-script`. Let's try it out!",
+        "subSteps": [
+          {
+            "output": "There are only 3 steps to creating a script. First you have to name the script, then choose where the script should be ran, and lastly you have to add commands to the script separated by a comma (,). Let's start with naming the script",
+            "finished": "You've created your first script! You can now run the script by using the `forge run` command followed by the name of the script. For example, to run the `my-script` script, you would run `forge run my-script`. This command will run no matter what directory it is called from and will run as normal as if the folder it targets is open!\n\n For more help on any other commands you can run `forge help` to see all the commands available to you."
+          }
+        ]
+      }
+    ]
+  }
+}
