@@ -21,14 +21,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BaerBonesTechnology/shellforge.git"
+    "url": "git+https://github.com/BaerBonesTechnology/shellforge.git",
+    "directory": "npm"
   },
   "author": "Baer Hous",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/BaerBonesTechnology/shellforge/issues"
   },
-  "homepage": "https://github.com/BaerBonesTechnology/shellforge#readme",
+  "homepage": "https://github.com/BaerBonesTechnology/shellforge/tree/main/npm#readme",
   "keywords": [
     "workflow",
     "scripts",

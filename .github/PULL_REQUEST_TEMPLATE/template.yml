@@ -1,0 +1,58 @@
+name: Pull Request
+description: Create a pull request to contribute to this project
+title: "[PR] "
+labels: ["pull request"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to contribute to this project! Please fill out this form as completely as possible.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what changes you are proposing in this pull request
+      placeholder: Describe your changes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why should these changes be implemented? What problem do they solve?
+      placeholder: Explain the motivation and benefits of your changes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: List any related issues that this pull request addresses or is related to
+      placeholder: #123, #456, etc...
+
+  - type: checkboxes
+    id: sdk
+    attributes:
+      label: SDK
+      description: Which SDK(s) would these changes impact?
+      options:
+        - Dart
+        - Node.js
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgments
+      options:
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have provided sufficient detail and context
+          required: true
+        - label: I have added tests to cover my changes
+          required: true
+        - label: I have updated the documentation if necessary
+          required: true
