@@ -1,0 +1,49 @@
+{
+  "name": "shellforge",
+  "version": "0.0.2",
+  "description": "A workflow CLI created to streamline any tasks that are done on a regular basis through the terminal",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "forge": "bin/index.js"
+  },
+  "dependencies": {
+    "boxen": "^7.1.1",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.7",
+    "lodash": "^4.17.21",
+    "yargs": "^17.7.2"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaerBonesTechnology/shellforge.git"
+  },
+  "author": "Baer Hous",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BaerBonesTechnology/shellforge/issues"
+  },
+  "homepage": "https://github.com/BaerBonesTechnology/shellforge#readme",
+  "keywords": [
+    "workflow",
+    "scripts",
+    "utility",
+    "shell",
+    "forge",
+    "shellforge",
+    "automation",
+    "cli",
+    "task-runner",
+    "script-runner",
+    "cross-shell",
+    "bash",
+    "powershell",
+    "zsh"
+  ],
+  "devDependencies": {
+    "vitest": "^4.1.3"
+  }
+}
